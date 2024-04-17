@@ -40,9 +40,7 @@ const Sidebar = () => {
           <div className="sidebar">
             {/* heading */}
             <div className="heading">
-              <Link to={"/home"}>
-                Logo
-              </Link>
+              <Link to={"/home"}>Logo</Link>
               <button onClick={closeSideBar} className="btn close-sidebar">
                 <BsBoxArrowLeft />
               </button>

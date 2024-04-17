@@ -126,13 +126,17 @@
 
 
 .account-quick-links {
-  grid-template-columns: 1fr 1fr !important;
+  grid-template-columns: 1fr 1fr;
 
-  @include b.breakpoint-down("500") {
+  @include b.breakpoint-down("768") {
     display: flex;
     flex-wrap: wrap;
 
     & a {
+      width: 100% !important;
+    }
+
+    & .stat-jd {
       width: 100%;
     }
   }
