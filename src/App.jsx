@@ -47,35 +47,35 @@ const App = () => {
     <>
       <QueryClientProvider client={client}>
         <>
-            <div className="site-container">
-              <div className="notif"></div>
-              <Sidebar />
-              <div className="main">
-                <Routes>
-                  {/* auth pages */}
-                  <Route path="/" element={<Home />} />
+          <div className="site-container">
+            <div className="notif"></div>
+            <Sidebar />
+            <div className="main">
+              <Routes>
+                {/* auth pages */}
+                <Route path="/" element={<Home />} />
 
-                  {/* dashboad pages */}
-                  <Route path="/auth/login" element={<Login />} />
-                  <Route path="/auth/register" element={<Register />} />
-                  <Route path="auth/logout" element={<Logout />} />
-                  <Route exact path="/account" element={<Account />}>
-                    <Route
-                      path="/account/new-account"
-                      element={<CreateNewAccount />}
-                    />
-                    <Route
-                      path="/account/list-of-accounts"
-                      element={<AccountList />}
-                    />
-                  </Route>
-                  <Route path="/change-password" element={<ChangePassword />} />
-                  <Route path="/account-details" element={<AccountDetails />} />
-                  {/* 404 */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </div>
+                {/* dashboad pages */}
+                <Route path="/auth/login" element={<Login />} />
+                <Route path="/auth/register" element={<Register />} />
+                <Route path="auth/logout" element={<Logout />} />
+                <Route exact path="/account" element={<Account />}>
+                  <Route
+                    path="/account/new-account"
+                    element={<CreateNewAccount />}
+                  />
+                  <Route
+                    path="/account/list-of-accounts"
+                    element={<AccountList />}
+                  />
+                </Route>
+                <Route path="/change-password" element={<ChangePassword />} />
+                <Route path="/account-details" element={<AccountDetails />} />
+                {/* 404 */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
             </div>
+          </div>
         </>
       </QueryClientProvider>
     </>
