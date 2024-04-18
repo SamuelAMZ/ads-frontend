@@ -41,24 +41,25 @@
       margin-bottom: 0.5rem;
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.2rem;
     }
 
     input {
       @extend %input-style;
     }
 
-    button {
-      margin-top: 1rem;
-      border-color: $accent;
-      @extend %gradient-bg;
+  }
 
-      &:hover {
-        border-color: $accent;
-        background: $green-light;
-        color: $accent;
-        transition: all 0.3s ease-in;
-      }
+  button {
+    margin-top: 1rem;
+    border-color: $accent;
+    @extend %gradient-bg;
+
+    &:hover {
+      border-color: $accent;
+      background: $green-light;
+      color: $accent;
+      transition: all 0.3s ease-in;
     }
   }
 }

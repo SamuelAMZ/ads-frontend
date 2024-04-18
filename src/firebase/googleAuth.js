@@ -1,6 +1,6 @@
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { FirebaseAuth } from "./config";
-import { saveCredentials } from "./saveCredentials";
+// import { saveCredentials } from "./saveCredentials";
 
 const googleProvider = new GoogleAuthProvider();
 

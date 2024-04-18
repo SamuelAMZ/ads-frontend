@@ -1,125 +1,161 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 // navigation hook
-import { useNavigate } from "react-router-dom";
 
 // helpers
-import postReq from "../../../helpers/postReq";
 import notif from "../../../helpers/notif";
+import { delay } from "../../../helpers/delay";
 
 // react query
-import { useQuery, QueryClient } from "react-query";
+
+import { loginWithCredentials } from "../../../firebase/credentialsAuth";
+import { signinWithGoogle } from "../../../firebase/googleAuth";
+import { useCurrentUser } from "../../../hooks/useCurrentUser";
+
 
 // env file
-let VITE_ENV = import.meta.env.VITE_ENV;
 
 const CreateNewAccount = () => {
-  const navigate = useNavigate();
-
-  const [data, setData] = useState({
-    username: "",
+  const pwdTarget = useRef(null);
+  const [isHidden, setIsHidden] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [makeRedirection, setMakeRedirection] = useState(true);
+  // login data
+  const [loginData, setLoginData] = useState({
     email: "",
+    password: "",
   });
 
-  const [isLoading, setIsloadind] = useState(false);
-
-  const handleChanges = (e, type) => {
-    if (type === "username") {
-      setData({
-        username: e.target.value,
-        email: data.email,
-      });
+  // display password
+  const togglePassword = () => {
+    if (pwdTarget.current) {
+      pwdTarget.current.type =
+        pwdTarget.current.type == "text" ? "password" : "text";
     }
-
-    if (type === "email") {
-      setData({
-        username: data.username,
-        email: e.target.value,
-      });
-    }
+    setIsHidden((prev) => !prev);
   };
-  // handling registration function
-  const handleSubmitions = async () => {
-    // verify if username don't have spaces and special caracters
-    let format = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
-    if (format.test(data.username)) {
-      notif("verify username, no space, no special characters");
-      return;
-    }
 
-    if (data.username !== "" && data.email !== "") {
-      const newUser = {
-        username: data.username.trim(),
-        email: data.email.toLowerCase().trim(),
-        date: new Date(),
-        page: "account",
-      };
+  // login with google
+  const googleLogin = async () => {
+    setMakeRedirection(false);
+    try {
+      const serverAnswer = await signinWithGoogle();
 
-      // send req
-      return await postReq(newUser, "/api/new-account");
+      if (serverAnswer.code === "bad") {
+        notif(serverAnswer.message);
+      }
+
+      if (serverAnswer.message === "ok") {
+        notif("log in successfully");
+      }
+
+      // redirect to profile
+      notif("login successfully");
+      window.location.href = "/dashboard";
+    } catch (error) {
+      console.log(error);
     }
   };
 
-  const { data: newUserData, refetch: sendPost } = useQuery(
-    ["new"],
-    handleSubmitions,
-    {
-      refetchOnWindowFocus: false,
-      enabled: false,
-    }
-  );
-
-  const handleNewAccount = async (e) => {
+  // login with email and password
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setIsloadind(true);
+    setMakeRedirection(false);
 
-    // send req
-    await sendPost();
-    setIsloadind(false);
+    // chgeck if all inputs are filled
+    if (!loginData.email || !loginData.password) {
+      return notif("some inputs are empty");
+    }
+
+    // loader
+    setIsLoading(true);
+
+    // register the user
+    try {
+      const credentials = await loginWithCredentials(
+        loginData.email,
+        loginData.password
+      );
+
+      if (credentials) {
+        notif("login successfully");
+        delay(1500).then(() => {
+          // redirect to profile
+          window.location.href = "/account";
+        });
+      }
+      
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error.message);
+      notif(
+        error.message
+          .replace("Firebase:", "")
+          .replace("Error", "")
+          .replace("(", "")
+          .replace(")", "")
+          .replace("auth", "")
+          .replace("/", "")
+          .replaceAll("-", " ")
+      );
+      setIsLoading(false);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
+  // check if user is logged in
+  const [user, loading, error] = useCurrentUser();
   useEffect(() => {
-    if (!newUserData) return;
-    if (VITE_ENV === "development") {
-      console.log(newUserData);
+    // check backward navigation
+    // if already login, redirect  to the dashboard
+    if (
+      makeRedirection &&
+      !loading &&
+      user &&
+      window.location.pathname === "/auth/login"
+    ) {
+      window.location.href = "/dashboard";
     }
-
-    if (newUserData?.code === "ok") {
-      notif(newUserData?.message);
-
-      // navigate(-1);
-      setTimeout(() => {
-        navigate("/account");
-        window.location.reload(true);
-      }, 3000);
-    } else {
-      notif(newUserData?.message, "error");
+    if (error) {
+      // send notificaiton
+      console.log(error);
     }
-  }, [newUserData]);
+  });
 
   return (
     <div className="your-account">
       {/* create user */}
       <div className="change change-name">
         <label htmlFor="keyword">Create New Admin User</label>
-        <form onSubmit={handleNewAccount}>
+        <form onSubmit={handleLogin}>
           <input
             id="username"
             type="text"
             placeholder="username"
             className="input input-bordered w-full"
-            value={data.username}
+            value={loginData.email}
             required
-            onChange={(e) => handleChanges(e, "username")}
+            onChange={(e) =>
+              setLoginData({
+                ...loginData,
+                email: e.target.value,
+              })
+            }
           />
           <input
             id="email"
             type="email"
             placeholder="email"
             className="input input-bordered w-full"
-            value={data.email}
+            value={loginData.email}
             required
-            onChange={(e) => handleChanges(e, "email")}
+            onChange={(e) =>
+              setLoginData({
+                ...loginData,
+                email: e.target.value,
+              })
+            }
           />
           {isLoading && (
             <button className="btn btn-primary loading">processing...</button>

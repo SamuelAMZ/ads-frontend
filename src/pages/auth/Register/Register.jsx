@@ -8,13 +8,12 @@ import { signInWithCredentials } from "../../../firebase/credentialsAuth";
 // custom hooks
 import notif from "../../../helpers/notif";
 import { delay } from "../../../helpers/delay";
-
-// hooks
-import { useCurrentUser } from "../../../hooks/useCurrentUser";
+import { FirebaseAuth as auth } from "../../../firebase/config";
+import { useNavigate } from "react-router-dom";
 
 export const Register = () => {
+  const navigate = useNavigate();
   const pwdTarget = useRef(null);
-  const [makeRedirection, setMakeRedirection] = useState(true);
 
   // state for password display
   const [isHidden, setIsHidden] = useState(false);
@@ -38,9 +37,6 @@ export const Register = () => {
   // login with email and password
   const handleRegistration = async (e) => {
     e.preventDefault();
-    setMakeRedirection(false);
-
-    // chgeck if all inputs are filled
 
     if (registrationData.name === "") {
       notif("Name is required");
@@ -67,19 +63,10 @@ export const Register = () => {
         registrationData.password
       );
 
-      // send request to the server
-      const credentials = {
-        uid: userCredential.uid,
-        email: userCredential.email,
-        name: registrationData.name,
-      };
-      if (credentials) {
+      if (userCredential) {
         notif("signin successfully");
         setIsLoading(false);
-        delay(1500).then(() => {
-          // redirect to profile
-          window.location.href = "/account";
-        });
+        await delay(1500);
       }
     } catch (error) {
       console.log(error.message);
@@ -97,24 +84,11 @@ export const Register = () => {
     }
   };
 
-  const [user, loading, error] = useCurrentUser();
-  // check if user is logged in and redirect
   useEffect(() => {
-    if (
-      makeRedirection &&
-      user &&
-      !loading &&
-      window.location.pathname === "/auth/register"
-    ) {
-      notif("Already logged in.");
-      delay(1500).then(() => {
-        window.location.href = "/";
-      });
-    }
-    if (error) {
-      console.log(error);
-    }
-  });
+    auth.onAuthStateChanged((user) => {
+      if (user) navigate("/");
+    });
+  }, []);
 
   return (
     <div className="login-f">

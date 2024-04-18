@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
-// import { SubmitBtn } from "../../../components/SubmitBtn/Btn";
 import { Link } from "react-router-dom";
 
 // firebase auth comps
 import { logoutFirebase } from "../../../firebase/credentialsAuth";
 
-import { useCurrentUser } from "../../../hooks/useCurrentUser";
-
 import { delay } from "../../../helpers/delay";
 import notif from "../../../helpers/notif";
 
+import { FirebaseAuth as auth } from "../../../firebase/config";
+import { useNavigate } from "react-router-dom";
+
 export const Logout = () => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogout = async () => {
@@ -22,25 +23,16 @@ export const Logout = () => {
     if (isLogout) {
       setIsLoading(false);
       notif("You have been logged out successfully");
-      delay(2000).then(() => {
-        window.location.href = "/auth/login";
-      });
+      await delay(1500);
     }
   };
 
-  // check if user is logged in
-  const [user, loading, error] = useCurrentUser();
   useEffect(() => {
-    // check backward navigation
-    // login before logout
-    if (!user && !loading && window.location.pathname === "/auth/logout") {
-      window.location.href = "/auth/login";
-    }
-    if (error) {
-      // send notificaiton
-      console.log(error);
-    }
-  });
+    auth.onAuthStateChanged((user) => {
+      if (user) navigate("/");
+      else if (!user) navigate("/auth/login");
+    });
+  }, []);
 
   return (
     <div className="login-f">

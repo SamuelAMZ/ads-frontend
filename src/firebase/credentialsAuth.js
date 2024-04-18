@@ -34,7 +34,4 @@ export const loginWithCredentials = async (email, password) => {
   }
 };
 
-export const logoutFirebase = async () => {
-  await FirebaseAuth.signOut();
-  return true;
-};
+export const logoutFirebase = async () => await FirebaseAuth.signOut();

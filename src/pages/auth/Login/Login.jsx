@@ -3,18 +3,18 @@ import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
 import { Link } from "react-router-dom";
 // firebase utils
 import { loginWithCredentials } from "../../../firebase/credentialsAuth";
-
 // custom hooks
 import notif from "../../../helpers/notif";
 import { delay } from "../../../helpers/delay";
-
-import { useCurrentUser } from "../../../hooks/useCurrentUser";
+import { FirebaseAuth as auth } from "../../../firebase/config";
+import { useNavigate } from "react-router-dom";
 
 export const Login = () => {
+  const navigate = useNavigate();
   const pwdTarget = useRef(null);
   const [isHidden, setIsHidden] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [makeRedirection, setMakeRedirection] = useState(true);
+
   // login data
   const [loginData, setLoginData] = useState({
     email: "",
@@ -33,7 +33,6 @@ export const Login = () => {
   // login with email and password
   const handleLogin = async (e) => {
     e.preventDefault();
-    setMakeRedirection(false);
 
     // chgeck if all inputs are filled
     if (loginData.email === "") {
@@ -59,10 +58,7 @@ export const Login = () => {
       if (credentials) {
         notif("login successfully");
         setIsLoading(false);
-        delay(1500).then(() => {
-          // redirect to profile
-          window.location.href = "/account";
-        });
+        await delay(1500);
       }
     } catch (error) {
       console.log(error.message);
@@ -82,27 +78,11 @@ export const Login = () => {
     }
   };
 
-  // check if user is logged in
-  const [user, loading, error] = useCurrentUser();
   useEffect(() => {
-    // check backward navigation
-    // if already login, redirect  to the dashboard
-    if (
-      makeRedirection &&
-      !loading &&
-      user &&
-      window.location.pathname === "/auth/login"
-    ) {
-      notif("Already logged in. Redirecting to the dashboard...");
-      delay(1500).then(() => {
-        window.location.href = "/";
-      });
-    }
-    if (error) {
-      // send notificaiton
-      console.log(error);
-    }
-  });
+    auth.onAuthStateChanged((user) => {
+      if (user) navigate("/");
+    });
+  }, []);
 
   return (
     <div className="login-f">

@@ -1,8 +1,5 @@
 import { useState, useEffect, useContext } from "react";
 import { useLocation, Link } from "react-router-dom";
-
-// component
-
 // icons
 import { AiOutlineHome } from "react-icons/ai";
 ("react-icons/tb");
@@ -25,7 +22,10 @@ const Sidebar = () => {
   const [allowed, setAllowed] = useState(false);
 
   useEffect(() => {
-    if (location.pathname === "/" || location.pathname.includes("/404")) {
+    if (
+      location.pathname.startsWith("/auth/") ||
+      location.pathname.includes("/404")
+    ) {
       setAllowed(false);
     } else {
       setAllowed(true);
@@ -34,13 +34,12 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* <Auth /> */}
       {allowed && (
         <>
           <div className="sidebar">
             {/* heading */}
             <div className="heading">
-              <Link to={"/home"}>Logo</Link>
+              <Link to={"/"}>Logo</Link>
               <button onClick={closeSideBar} className="btn close-sidebar">
                 <BsBoxArrowLeft />
               </button>
@@ -62,17 +61,15 @@ const Sidebar = () => {
               </Link>
               {/* separator
               <span className="seperator-element"></span> */}
-              <Link to={"/home"}>
-                <li
-                  className={location.pathname === "/home" ? "active-menu" : ""}
-                >
+              <Link to={"/"}>
+                <li className={location.pathname === "/" ? "active-menu" : ""}>
                   <AiOutlineHome />
                   <p>Dashboard</p>
                 </li>
               </Link>
 
               {/* logout */}
-              <Link to={"/logout"}>
+              <Link to={"/auth/logout"}>
                 <li>
                   <HiOutlineLogout />
                   <p>Logout</p>

@@ -10,36 +10,13 @@ import { HiOutlineUserGroup } from "react-icons/hi2";
 import { BsPersonWorkspace } from "react-icons/bs";
 import { GoNumber } from "react-icons/go";
 
-// helpers
-import postReq from "../../helpers/postReq";
-
-// react query
-import { useQuery } from "react-query";
-
 // loading effect
-import {AnalyticsLoadingSkeleton} from "./LoadingEffect";
+// import {AnalyticsLoadingSkeleton} from "./LoadingEffect";
 
 const Home = () => {
 
-  // get analytics
-  const handleAnalyticsLoading = async (e) => {
-    // send req
-    return await postReq({ home: "home" }, "/api/analytics");
-  };
-
-  const {
-    data: analyticsData,
-    isLoading: analyticsLoading,
-    isError,
-    isSuccess,
-  } = useQuery(["analytics"], handleAnalyticsLoading, {
-    refetchOnWindowFocus: false,
-    enabled: true,
-  });
-
   return (
     <>
-      {/* <Auth /> */}
       <Header page={"Home"} />
       {/* home */}
       <div className="centerer home-container">
@@ -48,36 +25,28 @@ const Home = () => {
           <div className="stat-jd">
             <span>
               Admins accounts:{" "}
-              {analyticsData?.analytic?.totalAdminsAccounts || (
-                <AnalyticsLoadingSkeleton />
-              )}
+              5
             </span>
             <AiOutlineUser />
           </div>
           <div className="stat-jd">
             <span>
               Candidates accounts:{" "}
-              {analyticsData?.analytic?.totalCandidatesAccounts || (
-                <AnalyticsLoadingSkeleton />
-              )}
+              10
             </span>
             <HiOutlineUserGroup />
           </div>
           <div className="stat-jd">
             <span>
               Candidates work here:{" "}
-              {analyticsData?.analytic?.totalWorkHereAccounts || (
-                <AnalyticsLoadingSkeleton />
-              )}
+              55
             </span>
             <BsPersonWorkspace />
           </div>
           <div className="stat-jd">
             <span>
               Number of Company:{" "}
-              {analyticsData?.analytic?.distinctCompanies || (
-                <AnalyticsLoadingSkeleton />
-              )}
+              88
             </span>
             <GoNumber />
           </div>
