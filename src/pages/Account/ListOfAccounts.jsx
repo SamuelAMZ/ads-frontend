@@ -1,154 +1,66 @@
 // hooks
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useState } from "react";
-import { useQuery } from "react-query";
-// helpers
-import postReq from "../../helpers/postReq";
-import notif from "../../helpers/notif";
-// components
+
 import { LoadingSkeleton } from "./LoadingSkeleton";
 // icons
 import { BsPlusLg, BsTrash } from "react-icons/bs";
-// env
-let REACT_APP_DOMAIN = import.meta.env.VITE_REACT_APP_DOMAIN;
-let VITE_ENV = import.meta.env.VITE_ENV;
 
 const AccountList = () => {
-  // pagination option
-  const tableConf = { perPage: "7", target: "user-data" };
-  // state provider
-  const [pageNumber, setPageNumber] = useState("1");
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [removing, setRemoving] = useState(false);
+  const [tableLoading, setTableLoading] = useState(true);
 
-  const location = useLocation();
+  setTimeout(() => {
+    setTableLoading(false);
+  }, 2000);
 
-  // get table data
-  const handleTableData = async () => {
-    // send req
-    return await postReq(
+  const tableConf = {
+    target: "user-data",
+    perPage: 5,
+  };
+
+  const tableData = {
+    totalDocs: 5,
+    docs: [
       {
-        page: pageNumber,
-        perPage: tableConf.perPage,
-        searchKeyword,
-        target: tableConf.target,
+        _id: "1",
+        username: "John Doe",
+        email: "johndoe@example.com",
+        createdAt: "2023-04-01T12:00:00Z",
       },
-      "/api/account"
-    );
-  };
-
-  const {
-    data: tableData,
-    isLoading: tableLoading,
-    error,
-    refetch: getPaginate,
-  } = useQuery(
-    [location.pathname, pageNumber, searchKeyword, tableConf.refresh],
-    handleTableData,
-    {
-      refetchOnWindowFocus: false,
-      enabled: true,
-    }
-  );
-
-  console.log(tableData);
-
-  //  handle next and prev
-  const handleNext = () => {
-    // check if page available
-    if (!tableData?.hasNextPage) {
-      // notif page end
-      return;
-    }
-
-    // move page to next
-    setPageNumber(tableData?.nextPage);
-  };
-
-  const handlePrev = () => {
-    // check if page available
-    if (!tableData?.hasPrevPage) {
-      // notif page end
-      return;
-    }
-
-    // move page to next
-    setPageNumber(tableData?.prevPage);
-  };
-
-  // handle search
-  const handleSearch = (e) => {
-    e.preventDefault();
-
-    if (!searchKeyword) {
-      return;
-    }
-
-    setPageNumber("1");
-    getPaginate();
-  };
-
-  // remove items
-  const handleRemove = async (id, target) => {
-    const targetId = id;
-
-    if (!targetId) {
-      return notif("error removing item, retry later");
-    }
-
-    setRemoving(true);
-
-    const reqData = {
-      id: targetId.trim(),
-      target: target.trim(),
-    };
-
-    // sending request
-    try {
-      let headers = new Headers();
-      headers.append("Content-Type", "application/json");
-      headers.append("Accept", "application/json");
-      headers.append("GET", "POST", "OPTIONS");
-      headers.append("Access-Control-Allow-Origin", `${REACT_APP_DOMAIN}`);
-      headers.append("Access-Control-Allow-Credentials", "true");
-
-      const response = await fetch(`${REACT_APP_DOMAIN}/api/account/delete`, {
-        mode: "cors",
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(reqData),
-        credentials: "include",
-      });
-
-      const serverMessage = await response.json();
-
-      if (serverMessage.code === "500") {
-        if (VITE_ENV === "development") {
-          console.log(serverMessage.message);
-        }
-      }
-
-      // set data
-      if (serverMessage.code === "ok") {
-        setRemoving(false);
-
-        // show success message
-        notif("removed successfully");
-
-        // refresh table
-        getPaginate();
-      }
-    } catch (err) {
-      if (VITE_ENV === "development") {
-        console.log(err);
-      }
-      setRemoving(false);
-    }
+      {
+        _id: "2",
+        username: "Jane Smith",
+        email: "janesmith@example.com",
+        createdAt: "2023-04-02T12:00:00Z",
+      },
+      {
+        _id: "2",
+        username: "Jane Allen",
+        email: "janeallen@example.com",
+        createdAt: "2023-04-02T12:00:00Z",
+      },
+      {
+        _id: "2",
+        username: "Jane Jack",
+        email: "janejack@example.com",
+        createdAt: "2023-04-02T12:00:00Z",
+      },
+      {
+        _id: "2",
+        username: "Jane lennon",
+        email: "janelennon@example.com",
+        createdAt: "2023-04-02T12:00:00Z",
+      },
+    ],
+    page: 1,
+    totalPages: 1,
+    hasNextPage: false,
+    hasPrevPage: false,
   };
 
   return (
     <>
-      <section className="table-container account-list">
+      <section className="table-container account-list space-y-6">
         <div
           className={
             tableConf && tableConf.target !== "user-data"
@@ -173,10 +85,7 @@ const AccountList = () => {
           )}
         </div>
         <div className="overflow-x-auto ">
-          {/* header */}
-
-          {/* table */}
-          <table className="table table-zebra ">
+          <table className="table table-zebra w-[100%] mx-auto">
             {/* thead*/}
             {tableConf &&
             tableConf.target === "user-data" &&
@@ -206,24 +115,26 @@ const AccountList = () => {
                   .fill("")
                   .map((elm, idx) => {
                     return (
-                      <tr key={idx}>
+                      <tr key={idx} className="w-[100%]">
                         <LoadingSkeleton />
                       </tr>
                     );
                   })}
 
               {/* error on nothing found */}
-              {(error || tableData?.docs?.length === 0) && (
+              {/* {(error || tableData?.docs?.length === 0) && (
                 <>
                   <div className="nodata">
                     <img src="/img/nodata.svg" alt="no data found" />
                     <h3>No record found</h3>
                   </div>
                 </>
-              )}
+              )} */}
 
               {/* user-data */}
-              {tableData?.docs?.length && tableConf.target === "user-data"
+              {tableData?.docs?.length &&
+              tableConf.target === "user-data" &&
+              !tableLoading
                 ? tableData?.docs?.map((elm, idx) => {
                     return (
                       <tr key={idx}>
@@ -235,9 +146,9 @@ const AccountList = () => {
                         <td>
                           <button
                             className="btn btn--delete"
-                            onClick={() =>
-                              handleRemove(elm?._id, "account-data")
-                            }
+                            // onClick={() =>
+                            //   handleRemove(elm?._id, "account-data")
+                            // }
                           >
                             <BsTrash />
                           </button>
@@ -249,14 +160,13 @@ const AccountList = () => {
             </tbody>
           </table>
         </div>
-        {/* footer */}
         {tableData?.docs?.length > 0 && (
           <div className="table-footer">
-            <div className="elms">
+            <div className="elms flex items-center justify-between">
               <button
                 disabled={!tableData?.hasPrevPage}
                 className="btn"
-                onClick={handlePrev}
+                // onClick={handlePrev}
               >
                 Previous
               </button>
@@ -268,7 +178,7 @@ const AccountList = () => {
               <button
                 disabled={!tableData?.hasNextPage}
                 className="btn"
-                onClick={handleNext}
+                // onClick={handleNext}
               >
                 Next
               </button>

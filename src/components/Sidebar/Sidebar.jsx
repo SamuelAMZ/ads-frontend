@@ -1,23 +1,22 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
 // icons
 import { AiOutlineHome } from "react-icons/ai";
 ("react-icons/tb");
 import { HiOutlineLogout } from "react-icons/hi";
 import { BsBoxArrowLeft } from "react-icons/bs";
-
+import { useCurrentUser } from "../../hooks/useCurrentUser";
 //helper
 import { closeSideBar } from "../../helpers/toggleMobileView";
 
 // context
-import UserContext from "../../contexts/UserContext";
 
 const Sidebar = () => {
   // loaction
   const location = useLocation();
+  const [user] = useCurrentUser();
 
   // current user
-  const { login } = useContext(UserContext);
 
   const [allowed, setAllowed] = useState(false);
 
@@ -51,10 +50,13 @@ const Sidebar = () => {
               <Link to={"/account"}>
                 <li className="user-box">
                   <div className="user-img">
-                    <img src="/img/default-user.png" alt="user image" />
+                    <img
+                      src={user?.photoURL ? user.photoURL : "/img/default-user.png"}
+                      alt="user image"
+                    />
                   </div>
                   <div className="user-details">
-                    <h3>{login?.user.name}</h3>
+                    <h3 className="truncate max-w-[170px]">{user?.displayName || user?.email}</h3>
                     <p>Admin</p>
                   </div>
                 </li>

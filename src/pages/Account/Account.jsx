@@ -18,6 +18,12 @@ const Account = () => {
   const location = useLocation();
   const [user] = useCurrentUser();
 
+  const name = user?.displayName;
+  const email = user?.email;
+  const role = "admin";
+  const createdAt =
+    new Date(user?.metadata.creationTime).toLocaleString() || "18/04/2024";
+
   return (
     <>
       <Header page={"Account"} />
@@ -58,18 +64,19 @@ const Account = () => {
             <div className="account-details">
               {/* {login && ( */}
               <ul>
+                {name && (
+                  <li>
+                    <span>Name:</span> {name}
+                  </li>
+                )}
                 <li>
-                  <span>Name:</span> {user?.name || "Jonh"}
+                  <span>Email:</span> {email}
                 </li>
                 <li>
-                  <span>Email:</span> {user?.email || "doe@gmail.com"}
+                  <span>Role:</span> {role}
                 </li>
                 <li>
-                  <span>Role:</span> admin
-                </li>
-                <li>
-                  <span>Registration Date:</span>{" "}
-                  {new Date(user?.date).toLocaleString() || "18/04/2024"}
+                  <span>Registration Date:</span> {createdAt}
                 </li>
               </ul>
               {/* )} */}

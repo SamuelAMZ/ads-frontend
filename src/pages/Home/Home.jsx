@@ -55,11 +55,11 @@ const Home = () => {
         {/* quick links */}
         <h3 className="quick-link-title">Quick Links</h3>
         <div className="quick-links stats-container-jd">
-          <Link to="/user-data">
+          <Link to="/account-details">
             <div className="stat-jd">
               <div>
                 <p>Users data</p>
-                <p className="desc">Visit and manage your user records.</p>
+                <p className="desc">Visit and manage your profile data.</p>
               </div>
               <BsClipboardData />
             </div>

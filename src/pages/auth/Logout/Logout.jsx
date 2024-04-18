@@ -29,8 +29,7 @@ export const Logout = () => {
 
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
-      if (user) navigate("/");
-      else if (!user) navigate("/auth/login");
+      if (!user) navigate("/auth/login");
     });
   }, []);
 

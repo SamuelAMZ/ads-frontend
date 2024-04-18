@@ -52,7 +52,7 @@ const Header = ({ page }) => {
                 <Link to={"/account"}>My Account</Link>
               </li>
               <li>
-                <a href="/logout">Logout</a>
+                <a href="/auth/logout">Logout</a>
               </li>
             </ul>
           </div>

@@ -25,8 +25,6 @@ import { useEffect } from "react";
 // helpers
 import { toggleMobileView } from "./helpers/toggleMobileView";
 
-import { UserProvider } from "./contexts/UserContext";
-
 import { FirebaseAuth as auth } from "./firebase/config";
 import { useNavigate } from "react-router-dom";
 
@@ -49,7 +47,6 @@ const App = () => {
     <>
       <QueryClientProvider client={client}>
         <>
-          <UserProvider>
             <div className="site-container">
               <div className="notif"></div>
               <Sidebar />
@@ -79,7 +76,6 @@ const App = () => {
                 </Routes>
               </div>
             </div>
-          </UserProvider>
         </>
       </QueryClientProvider>
     </>
