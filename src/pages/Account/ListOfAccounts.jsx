@@ -6,56 +6,84 @@ import { LoadingSkeleton } from "./LoadingSkeleton";
 // icons
 import { BsPlusLg, BsTrash } from "react-icons/bs";
 
+import { DeleteModalConfirmation } from "./deletionModal";
+
+const tableConf = {
+  target: "user-data",
+  perPage: 5,
+};
+
+const fakeTableData = {
+  totalDocs: 5,
+  docs: [
+    {
+      _id: "1",
+      username: "John Doe",
+      email: "johndoe@example.com",
+      createdAt: "2023-04-01T1:00:00Z",
+    },
+    {
+      _id: "2",
+      username: "Allen Smith",
+      email: "allensmith@example.com",
+      createdAt: "2023-04-02T18:00:00Z",
+    },
+    {
+      _id: "2",
+      username: "Athena Allen",
+      email: "athenaallen@example.com",
+      createdAt: "2023-04-02T19:00:00Z",
+    },
+    {
+      _id: "2",
+      username: "lord Jack",
+      email: "lordjack@example.com",
+      createdAt: "2023-04-02T08:00:00Z",
+    },
+    {
+      _id: "2",
+      username: "Sir lennon",
+      email: "sirlennon@example.com",
+      createdAt: "2023-04-02T12:00:00Z",
+    },
+  ],
+  page: 1,
+  totalPages: 1,
+  hasNextPage: false,
+  hasPrevPage: false,
+};
+
 const AccountList = () => {
   const [tableLoading, setTableLoading] = useState(true);
 
   setTimeout(() => {
     setTableLoading(false);
-  }, 2000);
+  }, 1300);
 
-  const tableConf = {
-    target: "user-data",
-    perPage: 5,
+  const [error, setError] = useState(false);
+  const [tableData, setTableData] = useState(fakeTableData);
+  const [index, setIndex] = useState(null);
+
+  const handleRemove = (idx) => {
+    toggleModal();
+    setIndex(idx);
   };
 
-  const tableData = {
-    totalDocs: 5,
-    docs: [
-      {
-        _id: "1",
-        username: "John Doe",
-        email: "johndoe@example.com",
-        createdAt: "2023-04-01T12:00:00Z",
-      },
-      {
-        _id: "2",
-        username: "Jane Smith",
-        email: "janesmith@example.com",
-        createdAt: "2023-04-02T12:00:00Z",
-      },
-      {
-        _id: "2",
-        username: "Jane Allen",
-        email: "janeallen@example.com",
-        createdAt: "2023-04-02T12:00:00Z",
-      },
-      {
-        _id: "2",
-        username: "Jane Jack",
-        email: "janejack@example.com",
-        createdAt: "2023-04-02T12:00:00Z",
-      },
-      {
-        _id: "2",
-        username: "Jane lennon",
-        email: "janelennon@example.com",
-        createdAt: "2023-04-02T12:00:00Z",
-      },
-    ],
-    page: 1,
-    totalPages: 1,
-    hasNextPage: false,
-    hasPrevPage: false,
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const toggleModal = () => {
+    setIsDeleting((prev) => !prev);
+  };
+
+  const deleteFile = (index) => {
+    if (index) {
+      const newTableData = { ...tableData };
+      newTableData.docs.splice(index, 1);
+      setTableData(newTableData);
+      toggleModal();
+    } else {
+      toggleModal();
+    }
   };
 
   return (
@@ -122,14 +150,18 @@ const AccountList = () => {
                   })}
 
               {/* error on nothing found */}
-              {/* {(error || tableData?.docs?.length === 0) && (
+              {(error || tableData?.docs?.length === 0) && (
                 <>
-                  <div className="nodata">
-                    <img src="/img/nodata.svg" alt="no data found" />
+                  <div className="nodata space-y-4">
+                    <img
+                      src="/img/nodata.svg"
+                      alt="no data found"
+                      className="max-w-[150px]"
+                    />
                     <h3>No record found</h3>
                   </div>
                 </>
-              )} */}
+              )}
 
               {/* user-data */}
               {tableData?.docs?.length &&
@@ -146,9 +178,7 @@ const AccountList = () => {
                         <td>
                           <button
                             className="btn btn--delete"
-                            // onClick={() =>
-                            //   handleRemove(elm?._id, "account-data")
-                            // }
+                            onClick={() => handleRemove(idx)}
                           >
                             <BsTrash />
                           </button>
@@ -186,6 +216,17 @@ const AccountList = () => {
           </div>
         )}
       </section>
+      {isDeleting && (
+        <DeleteModalConfirmation
+          isDeleting={isDeleting}
+          toggleModal={toggleModal}
+          deleteFile={deleteFile}
+          warning={{
+            message: "Are you sure you want to delete this account?",
+          }}
+          index={index}
+        />
+      )}
     </>
   );
 };
