@@ -34,7 +34,7 @@ export const DeleteModalConfirmation = ({
               className="btn btn--default flex items-center justify-center gap-2"
             >
               <span className="leading-6">Cancel</span>
-              <BsUpload />
+              {/* <BsUpload /> */}
             </button>
             <button
               className="btn btn--action flex items-center justify-center gap-2"
