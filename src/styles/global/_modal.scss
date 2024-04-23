@@ -1,6 +1,6 @@
 //import
-@use "../../styles/global/breakpoints" as b;
-@import "../../styles/global/variables";
+@use "./breakpoints" as b;
+@import "./variables";
 
 .modal--container {
     margin: 0 !important;

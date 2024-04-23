@@ -127,6 +127,7 @@ const AccountDetails = () => {
               </div>
             </div>
             <div className="btns">
+              {/* <button className="btn btn-outline w-full">add new question</button> */}
               <button className="btn  w-full">Update your account</button>
             </div>
           </form>

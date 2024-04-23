@@ -14,8 +14,7 @@ body {
   max-width: 100vw;
   min-height: 100vh;
   background-color: $background !important;
-  overflow-x: hidden;
-  /* fallback to clip */
+  overflow-x: hidden; /* fallback to clip */
   overflow-x: clip;
   scroll-behavior: smooth;
   position: relative;
@@ -28,9 +27,8 @@ body {
 
 // disable btn
 button:disabled {
-  cursor: not-allowed !important;
-  opacity: 0.7;
-  color: black !important;
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 /* scroll bar */
@@ -39,12 +37,10 @@ button:disabled {
   height: 5px;
   background: white;
 }
-
 ::-webkit-scrollbar-track {
   box-shadow: inset 0 0 5px #1013201d;
   border-radius: 10px;
 }
-
 ::-webkit-scrollbar-thumb {
   background: #b1b1b1;
   border-radius: 10px;
@@ -54,7 +50,6 @@ button:disabled {
   display: grid;
   grid-template-columns: 16rem 1fr;
   max-width: 100vw;
-  height: 100%;
 
   &.toggle-sideBar {
     display: block;
@@ -94,9 +89,9 @@ button:disabled {
       }
     }
 
-    // & .centerer {
-    //   width: fit-content;
-    // }
+    & .centerer {
+      width: fit-content;
+    }
 
     & .table-header {
       display: flex;
@@ -126,11 +121,9 @@ button:disabled {
     &:hover {
       @extend %gradient-bg;
       color: $white;
-
       & svg {
         color: inherit;
       }
-
       transition: all 0.3s ease-in;
     }
 
@@ -143,13 +136,8 @@ button:disabled {
   .main {
     width: 94%;
     margin-inline: auto;
-    max-height: 100vh;
-
-    @include b.breakpoint-down("1000") {
-      height: auto;
-      max-height: initial;
-    }
-
+    min-height: 100vh;
+    // max-height: auto;
     overflow-x: hidden;
   }
 }
@@ -263,7 +251,6 @@ button:disabled {
         flex-direction: column;
         gap: 0.3rem;
       }
-
       .btns {
         display: flex;
         flex-direction: column;

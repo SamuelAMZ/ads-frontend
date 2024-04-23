@@ -1,22 +1,23 @@
-import { useEffect, useRef, useState } from "react";
-import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-// firebase utils
-import { loginWithCredentials } from "../../../firebase/credentialsAuth";
+import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
+
+import postReq from "../../../helpers/postReq";
 // custom hooks
 import notif from "../../../helpers/notif";
 import { delay } from "../../../helpers/delay";
-import { FirebaseAuth as auth } from "../../../firebase/config";
 import { useNavigate } from "react-router-dom";
 
-export const Login = () => {
+export const Register = () => {
   const navigate = useNavigate();
   const pwdTarget = useRef(null);
-  const [isHidden, setIsHidden] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
 
-  // login data
-  const [loginData, setLoginData] = useState({
+  // state for password display
+  const [isHidden, setIsHidden] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  // signin data
+  const [registrationData, setRegistrationData] = useState({
+    name: "",
     email: "",
     password: "",
   });
@@ -31,16 +32,20 @@ export const Login = () => {
   };
 
   // login with email and password
-  const handleLogin = async (e) => {
+  const handleRegistration = async (e) => {
     e.preventDefault();
 
-    // chgeck if all inputs are filled
-    if (loginData.email === "") {
+    if (registrationData.name === "") {
+      notif("Name is required");
+      return;
+    }
+
+    if (registrationData.email === "") {
       notif("Email is required");
       return;
     }
 
-    if (loginData.password === "") {
+    if (registrationData.password === "") {
       notif("Password is required");
       return;
     }
@@ -50,39 +55,31 @@ export const Login = () => {
 
     // register the user
     try {
-      const credentials = await loginWithCredentials(
-        loginData.email,
-        loginData.password
-      );
+      const newUser = {
+        username: registrationData.name.trim(),
+        email: registrationData.email.toLowerCase().trim(),
+        date: new Date(),
+        page: "account",
+      };
 
-      if (credentials) {
-        notif("login successfully");
+      // send req
+      const res = await postReq(newUser, "/api/new-account");
+
+      if (res.code === "ok") {
+        notif(
+          res?.message ||
+            "Success! The new admin can check his email for the default password"
+        );
         setIsLoading(false);
-        await delay(1500);
+        await delay(1000);
+        navigate("/auth/login")
       }
     } catch (error) {
       console.log(error.message);
-      notif(
-        error.message
-          .replace("Firebase:", "")
-          .replace("Error", "")
-          .replace("(", "")
-          .replace(")", "")
-          .replace("auth", "")
-          .replace("/", "")
-          .replaceAll("-", " ")
-      );
-      setIsLoading(false);
-    } finally {
+      notif("Something went wrong!");
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    auth.onAuthStateChanged((user) => {
-      if (user) navigate("/");
-    });
-  }, []);
 
   return (
     <div className="login-f">
@@ -92,11 +89,28 @@ export const Login = () => {
           <h1>Admin</h1>
 
           {/* login text */}
-          <h2>Log in to the dashboard</h2>
+          <h2>Sign in to the dashboard</h2>
         </div>
 
         {/* form */}
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleRegistration}>
+          <div className="inputs">
+            <label htmlFor="email">Username</label>
+            <input
+              id="name"
+              type="text"
+              placeholder="Username"
+              className="input input-bordered input-primary w-full"
+              value={registrationData.name}
+              required
+              onChange={(e) =>
+                setRegistrationData({
+                  ...registrationData,
+                  name: e.target.value,
+                })
+              }
+            />
+          </div>
           <div className="inputs">
             <label htmlFor="email">Email</label>
             <input
@@ -104,11 +118,11 @@ export const Login = () => {
               type="text"
               placeholder="Email"
               className="input input-bordered input-primary w-full"
-              value={loginData.email}
+              value={registrationData.email}
               required
               onChange={(e) =>
-                setLoginData({
-                  ...loginData,
+                setRegistrationData({
+                  ...registrationData,
                   email: e.target.value,
                 })
               }
@@ -122,24 +136,24 @@ export const Login = () => {
               type="password"
               placeholder="Password"
               className="input input-bordered input-primary w-full pr-9"
-              value={loginData.password}
+              value={registrationData.password}
               required
               onChange={(e) =>
-                setLoginData({
-                  ...loginData,
+                setRegistrationData({
+                  ...registrationData,
                   password: e.target.value,
                 })
               }
             />
 
-            {isHidden && loginData.password ? (
+            {isHidden && registrationData.password ? (
               <AiOutlineEyeInvisible
                 className="absolute right-3 top-10 cursor-pointer text-black"
                 onClick={togglePassword}
               />
             ) : null}
 
-            {!isHidden && loginData.password ? (
+            {!isHidden && registrationData.password ? (
               <AiOutlineEye
                 className="absolute right-3 top-10 cursor-pointer text-black"
                 onClick={togglePassword}
@@ -154,9 +168,9 @@ export const Login = () => {
         </form>
 
         <div className="mt-4 flex items-center gap-2">
-          <span> Do not have an account?</span>
-          <Link to="/auth/register" className="hover:text-[#5ecac3]">
-            Register
+          <span> Already have an account?</span>
+          <Link to="/auth/login" className="hover:text-[#5ecac3]">
+            Login
           </Link>
         </div>
       </div>

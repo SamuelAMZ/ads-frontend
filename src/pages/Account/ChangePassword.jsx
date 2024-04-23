@@ -1,13 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+// helpers
+import postReq from "../../helpers/postReq";
 
+// react query
+import { useQuery } from "react-query";
 // helper
 import notif from "../../helpers/notif";
 // context
+import UserContext from "../../contexts/UserContext";
 // navigation hook
-import { useCurrentUser } from "../../hooks/useCurrentUser";
-import { updateUserPassword } from "../../firebase/updatePassword";
-import { logoutFirebase } from "../../firebase/credentialsAuth";
-import { delay } from "../../helpers/delay";
+import { useNavigate } from "react-router-dom";
+
 // components
 import Header from "../../components/Header/Header";
 
@@ -17,34 +20,42 @@ const ChangePassword = () => {
     matched: false,
     notify: false,
   });
-  const [isLoading, setIsLoading] = useState(false);
-  const [user] = useCurrentUser();
+  const navigate = useNavigate();
+  // get current account ID
+  const { login } = useContext(UserContext);
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-
-    if (!user) {
-      notif("You are not logged in", "error");
-      setIsLoading(false);
-      return;
-    }
-
-    if (!pwdMatchedWarnings.matched) {
-      notif("Passwords do not match", "error");
-      setIsLoading(false);
-      return;
-    }
-
-    const res = await updateUserPassword(data.new_password);
-    if (res) {
-      notif("Password updated successfully", "success");
-      setIsLoading(false);
-      await delay(1000);
-      await logoutFirebase();
-      return;
-    }
+    // add account ID
+    data["accountId"] = login?.user?.id;
+    // send req
+    await sendPost();
   };
+
+  const handlePasswordSubmit = async () => {
+    // send req
+    return await postReq(data, "/api/auth/change-password");
+  };
+
+  const {
+    data: resData,
+    isLoading,
+    refetch: sendPost,
+  } = useQuery(["new"], handlePasswordSubmit, {
+    refetchOnWindowFocus: false,
+    enabled: false,
+  });
+
+  useEffect(() => {
+    if (!resData) return;
+
+    if (resData?.code === "ok") {
+      notif(resData?.message);
+      navigate(-1);
+    } else {
+      notif(resData?.message, "error");
+    }
+  }, [resData]);
 
   // handling registration function
   const handleInputChange = (e, input_name) => {
@@ -70,16 +81,9 @@ const ChangePassword = () => {
 
   // check if password match
   useEffect(() => {
-    const { new_password, repeat_new_password, password } = data;
+    const { new_password, repeat_new_password } = data;
+    if (!new_password || !repeat_new_password) return;
 
-    if (!new_password && !repeat_new_password && !password) {
-      setPwdMatchedWarnings({ matched: false, notify: false });
-      return;
-    }
-    if (!new_password || !repeat_new_password) {
-      setPwdMatchedWarnings({ matched: false, notify: false });
-      return;
-    }
     if (!new_password && !repeat_new_password) {
       setPwdMatchedWarnings({ matched: false, notify: false });
       return;

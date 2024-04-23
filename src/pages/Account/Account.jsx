@@ -1,8 +1,15 @@
+import { useContext, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 // componenets
 import Header from "../../components/Header/Header";
+import Auth from "../../components/Auth/Auth";
+
+// contexts
+import UserContext from "../../contexts/UserContext";
+
 // env file
+let VITE_ENV = import.meta.env.VITE_ENV;
 
 // icons
 import { AiOutlineSetting } from "react-icons/ai";
@@ -12,20 +19,20 @@ import { AiOutlineUser } from "react-icons/ai";
 import { HiOutlineLogout } from "react-icons/hi";
 // Component children
 import { Outlet } from "react-router-dom";
-import { useCurrentUser } from "../../hooks/useCurrentUser";
 
 const Account = () => {
   const location = useLocation();
-  const [user] = useCurrentUser();
+  const { login, changeLogin } = useContext(UserContext);
 
-  const name = user?.displayName;
-  const email = user?.email;
-  const role = "admin";
-  const createdAt =
-    new Date(user?.metadata.creationTime).toLocaleString() || "18/04/2024";
+  useEffect(() => {
+    if (VITE_ENV === "development") {
+      console.log(login, "login user");
+    }
+  }, []);
 
   return (
     <>
+      <Auth />
       <Header page={"Account"} />
       <div className="centerer account-container">
         {/* your account  */}
@@ -64,19 +71,18 @@ const Account = () => {
             <div className="account-details">
               {/* {login && ( */}
               <ul>
-                {name && (
-                  <li>
-                    <span>Name:</span> {name}
-                  </li>
-                )}
                 <li>
-                  <span>Email:</span> {email}
+                  <span>Name:</span> {login?.user?.name || "Jonh"}
                 </li>
                 <li>
-                  <span>Role:</span> {role}
+                  <span>Email:</span> {login?.user?.email || "doe@gmail.com"}
                 </li>
                 <li>
-                  <span>Registration Date:</span> {createdAt}
+                  <span>Role:</span> admin
+                </li>
+                <li>
+                  <span>Registration Date:</span>{" "}
+                  {new Date(login?.user?.date).toLocaleString() || "01/01/2023"}
                 </li>
               </ul>
               {/* )} */}

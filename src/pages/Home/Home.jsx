@@ -2,21 +2,43 @@ import { Link } from "react-router-dom";
 
 // components
 import Header from "../../components/Header/Header";
+import Auth from "../../components/Auth/Auth";
 
-// icons
 import { BsClipboardData } from "react-icons/bs";
-import { AiOutlineUser } from "react-icons/ai";
+import { AiOutlineUser, AiFillPlusCircle } from "react-icons/ai";
 import { HiOutlineUserGroup } from "react-icons/hi2";
 import { BsPersonWorkspace } from "react-icons/bs";
 import { GoNumber } from "react-icons/go";
 
+// helpers
+import postReq from "../../helpers/postReq";
+
+// react query
+import { useQuery } from "react-query";
+
 // loading effect
-// import {AnalyticsLoadingSkeleton} from "./LoadingEffect";
+import { AnalyticsLoadingSkeleton } from "./LoadingEffect";
 
 const Home = () => {
+  // get analytics
+  const handleAnalyticsLoading = async (e) => {
+    // send req
+    return await postReq({ home: "home" }, "/api/analytics");
+  };
+
+  const {
+    data: analyticsData,
+    isLoading: analyticsLoading,
+    isError,
+    isSuccess,
+  } = useQuery(["analytics"], handleAnalyticsLoading, {
+    refetchOnWindowFocus: false,
+    enabled: true,
+  });
 
   return (
     <>
+      <Auth />
       <Header page={"Home"} />
       {/* home */}
       <div className="centerer home-container">
@@ -25,28 +47,36 @@ const Home = () => {
           <div className="stat-jd">
             <span>
               Admins accounts:{" "}
-              5
+              {analyticsData?.analytic?.totalAdminsAccounts || (
+                <AnalyticsLoadingSkeleton />
+              )}
             </span>
             <AiOutlineUser />
           </div>
           <div className="stat-jd">
             <span>
-              Candidates accounts:{" "}
-              10
+              Lorem ipsum : 55
+              {/* {analyticsData?.analytic?.totalCandidatesAccounts || (
+                <AnalyticsLoadingSkeleton />
+              )} */}
             </span>
             <HiOutlineUserGroup />
           </div>
           <div className="stat-jd">
             <span>
-              Candidates work here:{" "}
-              55
+              Lorem ipsum : 55
+              {/* {analyticsData?.analytic?.totalWorkHereAccounts || (
+                <AnalyticsLoadingSkeleton />
+              )} */}
             </span>
             <BsPersonWorkspace />
           </div>
           <div className="stat-jd">
             <span>
-              Number of Company:{" "}
-              88
+              Lorem ipsum : 55
+              {/* {analyticsData?.analytic?.distinctCompanies || (
+                <AnalyticsLoadingSkeleton />
+              )} */}
             </span>
             <GoNumber />
           </div>
@@ -58,13 +88,12 @@ const Home = () => {
           <Link to="/account-details">
             <div className="stat-jd">
               <div>
-                <p>Users data</p>
-                <p className="desc">Visit and manage your profile data.</p>
+                <p>Account detail</p>
+                <p className="desc">Visit and manage your account.</p>
               </div>
               <BsClipboardData />
             </div>
           </Link>
-          
         </div>
       </div>
     </>

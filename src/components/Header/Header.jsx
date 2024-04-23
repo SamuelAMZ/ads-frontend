@@ -11,7 +11,6 @@ import {
   toggleSideBar,
 } from "../../helpers/toggleMobileView";
 
-
 const Header = ({ page }) => {
   const handleClick = () => {
     toggleSideBar();

@@ -19,13 +19,14 @@
       grid-template-rows: auto;
 
       &>.stat-jd {
-        width: 100%;
+        width: 80%;
+        // display: inline-flex;
       }
     }
 
     @include b.breakpoint('1440') {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       grid-template-rows: auto;
 
       &>.stat-jd {
@@ -37,12 +38,8 @@
       min-height: 5rem;
 
       @include b.breakpoint-down("768") {
-        // width: 70%;
-        min-height: 4rem;
-      }
-
-      @include b.breakpoint-down("500") {
         width: 100%;
+        min-height: 4rem;
       }
     }
   }
@@ -60,10 +57,6 @@
 
     width: fit-content;
     min-width: 12.5rem;
-
-    @include b.breakpoint-down("768") {
-      width: 100%;
-    }
 
     &:hover {
       @extend %gradient-bg;

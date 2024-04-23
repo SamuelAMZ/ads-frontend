@@ -4,7 +4,7 @@ import { IoIosClose } from "react-icons/io";
 // context
 export const DeleteModalConfirmation = ({
   isDeleting,
-  deleteFile,
+  checkConfirmation,
   toggleModal,
   warning = null,
   index,
@@ -29,7 +29,7 @@ export const DeleteModalConfirmation = ({
             <button
               onClick={(e) => {
                 e.preventDefault();
-                deleteFile(null);
+                checkConfirmation(null);
               }}
               className="btn btn--default flex items-center justify-center gap-2"
             >
@@ -40,7 +40,7 @@ export const DeleteModalConfirmation = ({
               className="btn btn--action flex items-center justify-center gap-2"
               onClick={(e) => {
                 e.preventDefault();
-                deleteFile(index);
+                checkConfirmation(index);
               }}
             >
               <span>Confirm</span>
